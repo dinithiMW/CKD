@@ -79,9 +79,9 @@ print(confusion_matrix(le_y_test, y_predict))
 print(classification_report(le_y_test, y_predict))
 
 # save classifier as an image
-# from sklearn import tree
-#fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(10, 8), dpi=1000)
-#tree.plot_tree(model_DT,
+from sklearn import tree
+fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(10, 8), dpi=1000)
+tree.plot_tree(model_DT,
              #  feature_names=feature_cols, class_names=['D', 'T'],
              #  filled=True);
-#fig.show()
+fig.show()
