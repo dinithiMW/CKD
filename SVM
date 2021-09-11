@@ -39,7 +39,6 @@ print(le_y_train)
 le_y_test = le.transform(y_test)
 print(le_y_test)
 
-
 model = SVC(kernel='linear')
 model.fit(x_train, le_y_train)
 
@@ -51,12 +50,22 @@ corr_matrix = numpy.corrcoef(le_y_test, y_predict)
 corr = corr_matrix[0, 1]
 R_sq = corr ** 2
 print("R_squared is", R_sq)
+
 recall = metrics.recall_score(le_y_test, y_predict)
 precision = metrics.precision_score(le_y_test, y_predict)
 print("Recall (all 1s predicted right):", round(recall, 2))
 print("Precision (confidence when predicting a 1):", round(precision, 2))
-print("Detail:")
 print("Accuracy is", accuracy_score(le_y_test, y_predict))
+
+root_mean_squared_error = sqrt(mean_squared_error(le_y_test, y_predict))
+print("RMSE is", root_mean_squared_error)
+
+MAE = mean_absolute_error(le_y_test, y_predict)
+print("MAPE is", MAE)
+
+print("Mean squared error", mean_squared_error(le_y_test, y_predict))
+print(confusion_matrix(le_y_test, y_predict))
+print(classification_report(le_y_test, y_predict))
 
 
 
