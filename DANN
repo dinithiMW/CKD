@@ -85,6 +85,9 @@ print("Mean squared error", mean_squared_error(le_y_test, y_predict))
 print(confusion_matrix(le_y_test, y_predict))
 print(classification_report(le_y_test, y_predict))
 
-
+plt.scatter(le_y_test,y_predict)
+plt.xlabel('True values')
+plt.ylabel('Predictions')
+plt.show()
 
 
