@@ -90,4 +90,12 @@ plt.xlabel('True values')
 plt.ylabel('Predictions')
 plt.show()
 
+classes = np.unique(y_test)
+fig, ax = plt.subplots()
+cm = metrics.confusion_matrix(y_test, y_predict, labels=classes)
+sns.heatmap(cm, annot=True, fmt='d', cmap=plt.cm.Reds, cbar=False)
+ax.set(xlabel="Predict", ylabel="True", title="Confusion matrix")
+ax.set_yticklabels(labels=classes, rotation=0)
+plt.show()
+
 
