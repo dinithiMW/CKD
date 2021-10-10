@@ -1,0 +1,108 @@
+import numpy as np
+import pandas as pd
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.neural_network import MLPClassifier
+
+import warnings
+warnings.filterwarnings(action='ignore')
+
+data = pd.read_csv("drinking_water_potability.csv")
+
+data.isna().sum()
+
+for feature in data.columns:
+    print("{} : {:.2f}%".format(feature, (data[feature].isna().sum() / len(data)) * 100))
+
+data[data['Potability'] == 0]
+data[data['Potability'] == 0]['ph']
+
+ph0 = data[data['Potability'] == 0]['ph'].mean()
+ph1 = data[data['Potability'] == 1]['ph'].mean()
+
+sulfate0 = data[data['Potability'] == 0]['Sulfate'].mean()
+sulfate1 = data[data['Potability'] == 1]['Sulfate'].mean()
+
+Trihalomethanes0 = data[data['Potability'] == 0]['Trihalomethanes'].mean()
+Trihalomethanes1 = data[data['Potability'] == 1]['Trihalomethanes'].mean()
+
+data.loc[(data['Potability'] == 0) & (data['ph'].isna()),'ph'] = ph0
+data.loc[(data['Potability'] == 1) & (data['ph'].isna()),'ph'] = ph1
+
+data.loc[(data['Potability'] == 0) & (data['Sulfate'].isna()),'Sulfate'] = sulfate0
+data.loc[(data['Potability'] == 1) & (data['Sulfate'].isna()),'Sulfate'] = sulfate1
+
+data.loc[(data['Potability'] == 0) & (data['Trihalomethanes'].isna()),'Trihalomethanes'] = Trihalomethanes0
+data.loc[(data['Potability'] == 1) & (data['Trihalomethanes'].isna()),'Trihalomethanes'] = Trihalomethanes1
+
+print(data.isna().sum())
+
+# charts
+sns.pairplot(data)
+
+sns.set_style('darkgrid')
+sns.countplot(data=data, x =data.Potability, palette='rainbow')
+plt.title('Count of Potability')
+
+# Outlier treatment
+for column in data:
+    plt.figure()
+    data.boxplot([column])
+
+X = data.drop('Potability', axis = 1)
+Y = data['Potability']
+
+scaler = StandardScaler()
+scaler.fit(X)
+X = pd.DataFrame(scaler.transform(X), columns = X.columns)
+
+print(X)
+
+print(Y)
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, train_size = 0.8, shuffle = True, random_state = 1)
+print(X.shape,X_train.shape, X_test.shape)
+
+models = {
+    'Logistic Regression' : LogisticRegression(),
+    'KNeighbors' : KNeighborsClassifier(),
+    'SVM' : SVC(),
+    'Decision Tree': DecisionTreeClassifier(),
+    'Random Forest': RandomForestClassifier(),
+    'Ada Boost' : AdaBoostClassifier(),
+    'MLP': MLPClassifier()
+}
+for name, model in models.items():
+    model.fit(X_train, Y_train)
+    print(name + ' trained!')
+
+accuracy_score = []
+for name, model in models.items():
+    score = model.score(X_test, Y_test)
+    accuracy_score.append(score)
+    print(name + "'s Accuracy is: {:.2f}%".format(score*100))
+
+print(accuracy_score)
+
+res = pd.DataFrame({
+    'Model Accuracy': accuracy_score,
+    "Model Name": ['LogisticRegression', 'KNeighborsClassifier', 'SVM', 'Decision Tree', 'Random Forest', 'Ada Boost', 'MLP']
+})
+
+print(res)
+
+plt.figure(figsize = (15, 10))
+sns.barplot(res['Model Accuracy'], res['Model Name'])
+plt.xlabel('Model Accuracy', fontsize = 15)
+plt.ylabel('Model Name', fontsize = 15)
+plt.show()
